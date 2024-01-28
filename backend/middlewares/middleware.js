@@ -1,3 +1,4 @@
+const { User } = require("../db");
 const {verifyJwt } = require("../jwt");
 
 function authMiddleware(req,res,next) {
