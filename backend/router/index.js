@@ -6,7 +6,6 @@ const userRouter = require("./user");
 
 const router = express.Router();
 
-router.use(express.json());
 
 router.use("/user", userRouter);
 
