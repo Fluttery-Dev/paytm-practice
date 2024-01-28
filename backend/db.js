@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+const { default: mongoose, SchemaTypes, Schema } = require("mongoose");
 
 
 mongoose.connect("mongodb+srv://flutterydev:Allem%40080603@cohort.3xtdu8e.mongodb.net/?retryWrites=true&w=majority");
@@ -8,8 +8,21 @@ const userSchema = mongoose.Schema({
     lastName: String,
     password: String,
     userName:  String,
+    account : {
+        type: SchemaTypes.ObjectId,
+        ref: Account,
+    }
+})
+
+const accountSchema = mongoose.Schema({
+    user: {
+        type: SchemaTypes.ObjectId,
+        ref: User,
+    },
+    balance: SchemaTypes.Number,
 })
 
 const User = mongoose.model('User',userSchema);
+const Account = mongoose.model('Account' , accountSchema);
 
-module.exports= {User};
+module.exports= {User, Account};
