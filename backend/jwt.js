@@ -1,6 +1,7 @@
 
 const jwt = require("jsonwebtoken");
-const jwtPassword = '123456';
+const { JWT_SECRET } = require("./config");
+const jwtPassword = JWT_SECRET;
 
 function signJwt(userName){
     const token = jwt.sign({
