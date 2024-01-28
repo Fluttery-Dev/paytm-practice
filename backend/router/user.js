@@ -1,7 +1,7 @@
 const express = require('express');
 const { authMiddleware } = require('../middlewares/middleware');
 const userSchema = require('../types');
-const { User } = require('../db');
+const { User, Account } = require('../db');
 const { signJwt } = require('../jwt');
 
 const userRouter = express.Router();
@@ -29,13 +29,23 @@ userRouter.post("/signup", async (req,res)=>{
         return;
     }
 
-    await User.create({
+    const user = await User.create({
         firstName : payload.firstName,
         lastName: payload.lastName,
         userName: payload.userName,
         password: payload.password,
     });
 
+    const balance = Math.floor(Math.random() * 1000) + 1;
+    const decimalBalance = balance*100;
+
+    const account = await Account.create({
+        user: user._id,
+        balance: decimalBalance, 
+    })
+
+    user.account = account._id;
+    user.save();
     
     const token = signJwt(payload.userName);
     res.json({
