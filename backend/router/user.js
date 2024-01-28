@@ -1,11 +1,15 @@
 const express = require('express');
+const { authMiddleware } = require('../middlewares/middleware');
+const userSchema = require('../types');
+const { User } = require('../db');
+const { signJwt } = require('../jwt');
 
 const userRouter = express.Router();
 
 
-router.post("/createUser", async (req,res)=>{
+userRouter.post("/signup", async (req,res)=>{
     const payload = req.body;
-    const payaloadResult = createUser.safeParse(payload);
+    const payaloadResult = userSchema.safeParse(payload);
 
     if(!payaloadResult.success){
         res.status(411).json({
@@ -13,17 +17,19 @@ router.post("/createUser", async (req,res)=>{
         })
         return;
     }
+  
     const existingUser = await User.findOne({
-        username: req.body.username
+        userName: payload.userName
     })
 
     if (existingUser) {
-        return res.status(411).json({
-            message: "Email already taken/Incorrect inputs"
+        res.status(411).json({
+            msg: "Email already taken/Incorrect inputs"
         })
+        return;
     }
 
-    await userModel.create({
+    await User.create({
         firstName : payload.firstName,
         lastName: payload.lastName,
         userName: payload.userName,
@@ -39,12 +45,22 @@ router.post("/createUser", async (req,res)=>{
 })
 
 
-router.post("/signIn", (req,res)=>{
+userRouter.post("/signin", async (req,res)=>{
     const payload = req.body;
-    const payaloadResult = verifyUser.safeParse(payload);
+    const payaloadResult = userSchema.safeParse(payload);
     if(!payaloadResult.success){
         res.status(401).json({
             msg: "Error while logging in",
+        })
+        return;
+    }
+
+    const user = await User.findOne({userName: payload.userName, password: payload.password});
+    console.log(user);
+
+    if(!user){
+        res.status(411).json({
+            msg: "Wrong Username or password"
         })
         return;
     }
@@ -57,19 +73,26 @@ router.post("/signIn", (req,res)=>{
 });
 
 
-router.put("/edit", async (req,res)=>{
-    const token = req.headers.authorization;
-    if(!verifyJwt(token)){
-        res.status(401).json({
-            msg: "Unauthorized",
-        });
+userRouter.put("/", authMiddleware, async (req,res)=>{
+
+    const {_id, firstName, lastName, userName, password} = req.body;
+
+    const update  = {};
+    
+    if(firstName) update.firstName = firstName;
+    if(lastName) update.lastName = lastName;
+    if(userName) update.userName = userName;
+    if(password) update.userName = password;
+
+    if(!userSchema.safeParse(update).success){
+        res.status(411).json({
+            msg: "Error while updating information"
+        })
     }
 
-    const payload = req.body;
-
-    const newData = await userModel.findOneAndUpdate(
-        { _id: payload._id }, // filter
-        payload, // update
+    const newData = await User.findOneAndUpdate(
+        { _id: _id }, // filter
+        update, // update
         { new: true }, // options
 
     );
@@ -79,6 +102,24 @@ router.put("/edit", async (req,res)=>{
         newData: newData
     })
 })
+userRouter.get("/bulk", authMiddleware, async (req, res) => {
+    const filter = req.query.filter || "";
 
+    const users = await User.find({
+        $or: [{
+            firstName: {
+                "$regex": filter
+            }
+        }, {
+            lastName: {
+                "$regex": filter
+            }
+        }]
+    })
+
+    res.json({
+        users: users
+    });
+});
 
 module.exports = userRouter;

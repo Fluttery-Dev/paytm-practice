@@ -19,4 +19,8 @@ function verifyJwt(token){
     }
 }
 
-module.exports = {verifyJwt, signJwt}
+function decodeJwt(token){
+    return jwt.decode(token).userName;
+}
+
+module.exports = {verifyJwt, signJwt, decodeJwt}

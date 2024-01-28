@@ -1,18 +1,12 @@
 const Zod = require("zod");
 
-const createUser = Zod.object({
-    firstName: Zod.string(),
-    lastName: Zod.string(),
-    password: Zod.string().min(6),
-    userName: Zod.string().email(),
+const userSchema = Zod.object({
+    firstName: Zod.string().optional(),
+    lastName: Zod.string().optional(),
+    password: Zod.string().min(6).optional(),
+    userName: Zod.string().email().optional(),
 })
 
 
-const verifyUser = Zod.object({
 
-    password: Zod.string().min(6),
-    userName: Zod.string().email(),
-})
-
-
-module.exports = {createUser, verifyUser}
+module.exports = userSchema;

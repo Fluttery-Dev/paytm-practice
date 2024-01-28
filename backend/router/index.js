@@ -1,18 +1,14 @@
 const express = require("express");
-const { verifyUser, createUser } = require("./types");
-const { userModel } = require("./db");
-const { signJwt, verifyJwt } = require("./jwt");
 const userRouter = require("./user");
 
-const router = express.Router();
+const rootRouter = express.Router();
 
-
-router.use("/user", userRouter);
-
-router.get("/", (req, res) => {
+rootRouter.get("/", (req, res) => {
     res.json({
         msg: "welcome to the paytm router"
     })
 })
 
-module.exports={router}
+rootRouter.use("/user", userRouter);
+
+module.exports=rootRouter;
