@@ -85,7 +85,7 @@ userRouter.post("/signin", async (req,res)=>{
 
 userRouter.put("/", authMiddleware, async (req,res)=>{
 
-    const {_id, firstName, lastName, userName, password} = req.body;
+    const {userId, firstName, lastName, userName, password} = req.body;
 
     const update  = {};
     
@@ -98,10 +98,11 @@ userRouter.put("/", authMiddleware, async (req,res)=>{
         res.status(411).json({
             msg: "Error while updating information"
         })
+        return;
     }
 
     const newData = await User.findOneAndUpdate(
-        { _id: _id }, // filter
+        { _id: userId }, // filter
         update, // update
         { new: true }, // options
 
@@ -112,6 +113,7 @@ userRouter.put("/", authMiddleware, async (req,res)=>{
         newData: newData
     })
 })
+
 userRouter.get("/bulk", authMiddleware, async (req, res) => {
     const filter = req.query.filter || "";
 

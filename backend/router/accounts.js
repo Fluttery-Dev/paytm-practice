@@ -2,6 +2,8 @@ const express = require("express");
 const { authMiddleware } = require("../middlewares/middleware");
 const { User, Account } = require("../db");
 const { default: mongoose } = require("mongoose");
+const decimalPrecision = 2;
+const balanceMultiplier = Math.pow(10,decimalPrecision);
 
 const accountRouter = express.Router();
 
@@ -14,24 +16,26 @@ async function accountInfo(userName) {
         return account;
     } catch (error) {
         return null;
-    }
-   
+    }  
     
 }
 
 accountRouter.get("/balance", async(req,res)=>{
 
-    const account = await accountInfo(req.userName);
+    const account = await Account.findOne({user: req.userId});
     res.json({
-        balance: account.balance/100,
+        balance: account.balance/balanceMultiplier,
     })
 })
 
 accountRouter.post("/transfer", async (req,res)=>{
+    
     const session = await mongoose.startSession();
-    const senderAccount = await accountInfo(req.userName);
+    session.startTransaction()
+
+    const senderAccount = await Account.findOne({user: req.userId});
     const {receiver,amount} =  req.body;
-    const decimalAmount = amount*100;
+    const decimalAmount = amount*balanceMultiplier;
     const receiverAccount = await accountInfo(receiver);
 
     if(!senderAccount || !receiverAccount){
@@ -47,8 +51,6 @@ accountRouter.post("/transfer", async (req,res)=>{
         })
         return;
     }
-
-    session.startTransaction()
 
     senderAccount.balance-=decimalAmount;
     receiverAccount.balance += decimalAmount;

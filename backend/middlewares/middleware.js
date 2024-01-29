@@ -1,21 +1,23 @@
 const { User } = require("../db");
 const {verifyJwt } = require("../jwt");
 
-function authMiddleware(req,res,next) {
+async function authMiddleware(req,res,next) {
 
     const authHeader = req.headers.authorization;
 
     if(!authHeader || !authHeader.startsWith('Bearer ')){
-        return res.status(404).json({
+        res.status(404).json({
             msg: "Authorisation token not found"
         })
+        return ;
     }
 
     const token = authHeader.split(" ")[1];
 
     try {        
     const userName = verifyJwt(token).userName;
-    req.userName = userName;
+    const user = await User.find({userName: userName});
+    req.userId = user._id;
     next();
     } catch (error) {
         return res.status(403).json({msg:"wrong authorisation token"});
