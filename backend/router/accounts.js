@@ -9,10 +9,14 @@ accountRouter.use(authMiddleware);
 
 async function accountInfo(userName) {
     const user = await User.findOne({userName:userName});
-    console.log(userName)
-    console.log(user);
-    const account = await Account.findOne({_id: user.account});
-    return account;
+    try {
+        const account = await Account.findOne({_id: user.account});
+        return account;
+    } catch (error) {
+        return null;
+    }
+   
+    
 }
 
 accountRouter.get("/balance", async(req,res)=>{
@@ -34,18 +38,20 @@ accountRouter.post("/transfer", async (req,res)=>{
         res.status(404).json({
             msg: "Account not found"
         })
+        return;
     }
 
     if(senderAccount.balance < decimalAmount){
         res.status(404).json({
             msg: "Insufficent Account Balance"
         })
+        return;
     }
 
     session.startTransaction()
 
     senderAccount.balance-=decimalAmount;
-    receiverAccount.balance -= decimalAmount;
+    receiverAccount.balance += decimalAmount;
 
     try {
         await senderAccount.save();
@@ -56,6 +62,7 @@ accountRouter.post("/transfer", async (req,res)=>{
             senderAccountBalance:senderAccount.balance,
             receiverAccountBalance: receiverAccount.balance,
         })
+        return;
 
     } catch (error) {
         await session.abortTransaction();
