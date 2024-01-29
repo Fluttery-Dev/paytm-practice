@@ -10,14 +10,14 @@ const userSchema = mongoose.Schema({
     userName:  String,
     account : {
         type: SchemaTypes.ObjectId,
-        ref: Account,
+        ref: 'Account',
     }
 })
 
 const accountSchema = mongoose.Schema({
     user: {
         type: SchemaTypes.ObjectId,
-        ref: User,
+        ref: 'User',
     },
     balance: SchemaTypes.Number,
 })

@@ -14,7 +14,7 @@ function authMiddleware(req,res,next) {
     const token = authHeader.split(" ")[1];
 
     try {        
-    const userName = verifyJwt(token);
+    const userName = verifyJwt(token).userName;
     req.userName = userName;
     next();
     } catch (error) {

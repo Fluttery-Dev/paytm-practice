@@ -11,12 +11,7 @@ function signJwt(userName){
     return token;
 }
 function verifyJwt(token){
-    try {
-        jwt.verify(token, jwtPassword);
-        return true;
-    } catch (error) {
-        return false;
-    }
+    return jwt.verify(token, jwtPassword);
 }
 
 function decodeJwt(token){

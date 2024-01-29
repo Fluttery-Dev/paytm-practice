@@ -9,16 +9,17 @@ accountRouter.use(authMiddleware);
 
 async function accountInfo(userName) {
     const user = await User.findOne({userName:userName});
-    req.accountId = user.account;
-    const account = await Account.findOne({_id: req.accountId});
+    console.log(userName)
+    console.log(user);
+    const account = await Account.findOne({_id: user.account});
     return account;
 }
 
 accountRouter.get("/balance", async(req,res)=>{
 
-    const account = accountInfo(req.userName);
+    const account = await accountInfo(req.userName);
     res.json({
-        balance: account.balance,
+        balance: account.balance/100,
     })
 })
 
@@ -41,7 +42,7 @@ accountRouter.post("/transfer", async (req,res)=>{
         })
     }
 
-    await session.startTransaction()
+    session.startTransaction()
 
     senderAccount.balance-=decimalAmount;
     receiverAccount.balance -= decimalAmount;
@@ -52,6 +53,8 @@ accountRouter.post("/transfer", async (req,res)=>{
         await session.commitTransaction();
         res.json({
             msg:"Transfer Complete",
+            senderAccountBalance:senderAccount.balance,
+            receiverAccountBalance: receiverAccount.balance,
         })
 
     } catch (error) {
