@@ -36,7 +36,7 @@ accountRouter.post("/transfer", async (req,res)=>{
     const senderAccount = await Account.findOne({user: req.userId});
     const {receiver,amount} =  req.body;
     const decimalAmount = amount*balanceMultiplier;
-    const receiverAccount = await accountInfo(receiver);
+    const receiverAccount = await Account.findOne({user: body._id});
 
     if(!senderAccount || !receiverAccount){
         res.status(404).json({
