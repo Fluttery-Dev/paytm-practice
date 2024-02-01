@@ -34,7 +34,7 @@ accountRouter.post("/transfer", async (req,res)=>{
     session.startTransaction()
 
     const senderAccount = await Account.findOne({user: req.userId});
-    const {receiver,amount} =  req.body;
+    const {amount} =  req.body;
     const decimalAmount = amount*balanceMultiplier;
     const receiverAccount = await Account.findOne({user: body._id});
 

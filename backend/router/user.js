@@ -66,7 +66,7 @@ userRouter.post("/signin", async (req,res)=>{
     }
 
     const user = await User.findOne({userName: payload.userName, password: payload.password});
-    console.log(user);
+
 
     if(!user){
         res.status(411).json({
@@ -133,5 +133,18 @@ userRouter.get("/bulk", authMiddleware, async (req, res) => {
         users: users
     });
 });
+
+userRouter.get("/",authMiddleware, (req,res)=>{
+    const {userId} = req;
+    const user = User.findOne({_id:userId});
+    res.json(user);
+})
+
+
+userRouter.get("/:id",authMiddleware, (req,res)=>{
+    const userId = req.params.id;
+    const user = User.findOne({_id:userId});
+    res.json(user);
+})
 
 module.exports = userRouter;

@@ -1,23 +1,25 @@
-import { useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { Button } from "../components/Button";
 import BottomInfo from "../components/bottomInfo";
 import Heading from "../components/heading";
 import Input from "../components/input";
 import { SubHeading } from "../components/subheading";
 import { useNavigate } from "react-router-dom";
-import { authAtom } from "../atoms/authAtom";
 import { useState } from "react";
 import axios from "axios";
+import { isAuthorizedSelector } from "../atoms/authAtom";
 
 export default function SignIn() {
 
     const [Username, setUserName] = useState("");
     const [Password, setPassword] = useState("");
     const navigate  = useNavigate();
-    const setAuthorisation = useSetRecoilState(authAtom);
+    const isAuthorised = useRecoilValue(isAuthorizedSelector);
+
     async function onSubmit() {
-        console.log(Username);
-        console.log(Password);
+        if(isAuthorised){
+            navigate("/dashboard");
+        }
         let res = await axios.post("http://localhost:3000/api/v1/user/signin", {
             userName: Username,
             password: Password,
@@ -28,7 +30,7 @@ export default function SignIn() {
 
         if(res.status == 200){
             alert("Successfully Logged In");
-            setAuthorisation("Bearer " + res.data.token);
+            localStorage.setItem('token', res.data.token);
             navigate("/dashboard")
         }
         else{

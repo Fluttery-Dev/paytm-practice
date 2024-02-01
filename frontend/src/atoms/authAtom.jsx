@@ -1,14 +1,10 @@
-import { atom, selector } from "recoil"
+import { selector } from "recoil"
 
-export const authAtom = atom({
-    key: "authAtom",
-    default: "Bearer"
-})
+
 
 export const isAuthorizedSelector = selector({
   key: "isAuthorizedSelector",
-  get: ({get})=>{
-    const token = get(authAtom);
-    return token !== "Bearer";
+  get: ()=>{
+    return localStorage.getItem('token')!=null;
   }  
 })

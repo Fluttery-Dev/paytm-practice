@@ -1,10 +1,18 @@
-import { useState } from "react"
+
+import { useRecoilValueLoadable } from "recoil";
+import { balanceDetails } from "../atoms/userAtom";
 
 export default function Balance() {
-    const [balance,setBalance] = useState(100);
-    return (
-        <div className="text-black font-bold mb-2 py-2">
-            {"Your Balance  $" + balance}
-        </div>
-    )   
+    const loadable = useRecoilValueLoadable(balanceDetails);
+    switch (loadable.state){
+        case "hasValue":
+            const balance = loadable.contents;    
+            return (
+                    <div className="text-black font-bold mb-2 py-2">
+                        {"Your Balance  $" + balance}
+                    </div>
+                )  
+        default: <div>loading...</div>
+    }
+     
 }
