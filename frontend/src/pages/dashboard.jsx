@@ -9,6 +9,7 @@ import { useEffect } from "react";
 export default function Dashboard() {
     const isAuthorised = useRecoilValue(isAuthorizedSelector);
     const navigate = useNavigate();
+    console.log(isAuthorised)
    
     useEffect(()=>{  
         if(!isAuthorised){

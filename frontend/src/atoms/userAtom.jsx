@@ -4,7 +4,7 @@ import { atom, selector, selectorFamily } from "recoil";
 export const userInfoSelector = selector({
     key: "userInfoSelector",
     get:async ({get})=>{
-        const user = await axios.get("http://localhost:3000/api/v1/user/",{headers: {
+        const user = await axios.get(`http://localhost:3000/api/v1/user/`,{headers: {
             'Authorization': 'Bearer '+ localStorage.getItem("token"),
             'Content-Type': 'application/json'
           }});

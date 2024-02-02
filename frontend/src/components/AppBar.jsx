@@ -6,7 +6,8 @@ export default function AppBar() {
 
     switch(loadable.state){
         case "hasValue":
-            const user = loadable.contents;    
+            const user = loadable.contents;   
+            console.log(user);
             return (
                     
                     <div className="flex flex-row justify-between bg-transparent my-3">

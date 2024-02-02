@@ -7,7 +7,7 @@ import { SubHeading } from "../components/subheading";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { isAuthorizedSelector } from "../atoms/authAtom";
+import { isAuthorizedSelector, tokenState } from "../atoms/authAtom";
 
 export default function SignIn() {
 
@@ -15,6 +15,7 @@ export default function SignIn() {
     const [Password, setPassword] = useState("");
     const navigate  = useNavigate();
     const isAuthorised = useRecoilValue(isAuthorizedSelector);
+    const setToken = useSetRecoilState(tokenState);
 
     async function onSubmit() {
         if(isAuthorised){
@@ -31,6 +32,7 @@ export default function SignIn() {
         if(res.status == 200){
             alert("Successfully Logged In");
             localStorage.setItem('token', res.data.token);
+            setToken(res.data.token);
             navigate("/dashboard")
         }
         else{
